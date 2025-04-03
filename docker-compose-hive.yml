@@ -1,0 +1,139 @@
+version: '2' 
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:1.1.0-hadoop2.8-java8
+    container_name: namenode
+    volumes:
+      - ./data/namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop-hive.env
+    ports:
+      - 9870:9870
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:1.1.0-hadoop2.8-java8
+    container_name: resourcemanager
+    restart: on-failure
+    depends_on:
+      - namenode
+      - datanode1
+      - datanode2
+      - datanode3
+    volumes:
+      - ./data/resourcemanager:/hadoop/yarn/resourcemanager
+    env_file:
+      - ./hadoop-hive.env
+    ports:
+      - "8089:8088"
+
+  historyserver:
+    image: bde2020/hadoop-historyserver:1.1.0-hadoop2.8-java8
+    container_name: historyserver
+    depends_on:
+      - namenode
+      - datanode1
+      - datanode2
+    volumes:
+      - ./data/hadoop_historyserver:/hadoop/yarn/timeline
+    env_file:
+      - ./hadoop-hive.env
+    ports:
+      - "8188:8188"
+
+  nodemanager:
+    image: bde2020/hadoop-nodemanager:1.1.0-hadoop2.8-java8
+    container_name: nodemanager
+    depends_on:
+      - namenode
+      - datanode1
+      - datanode2
+    volumes:
+      - ./data/nodemanager:/hadoop/yarn/nodemanager
+    env_file:
+      - ./hadoop-hive.env
+    ports:
+      - "8042:8042"
+
+
+  datanode1:
+    image: bde2020/hadoop-datanode:1.1.0-hadoop2.8-java8
+    depends_on:
+      - namenode
+    volumes:
+      - ./data/datanode1:/hadoop/dfs/data  # Volume spécifique pour le 1er DataNode
+    env_file:
+      - ./hadoop-hive.env
+    ports:
+      - "9864:9864"
+
+  datanode2:
+    image: bde2020/hadoop-datanode:1.1.0-hadoop2.8-java8
+    depends_on:
+      - namenode
+    volumes:
+      - ./data/datanode2:/hadoop/dfs/data  # Volume spécifique pour le 2e DataNode
+    env_file:
+      - ./hadoop-hive.env
+    ports:
+      - "9865:9864"  # Port différent pour éviter les conflits
+
+  datanode3:
+    image: bde2020/hadoop-datanode:1.1.0-hadoop2.8-java8
+    depends_on:
+      - namenode
+    volumes:
+      - ./data/datanode3:/hadoop/dfs/data  # Volume spécifique pour le 3e DataNode
+    env_file:
+      - ./hadoop-hive.env
+    ports:
+      - "9866:9864"  # Port différent pour éviter les conflits
+
+  hive-server:
+    image: bde2020/hive:2.1.0-postgresql-metastore
+    container_name: hive-server
+    env_file:
+      - ./hadoop-hive.env
+    environment:
+      - "HIVE_CORE_CONF_javax_jdo_option_ConnectionURL=jdbc:postgresql://hive-metastore/metastore"
+    ports:
+      - "10000:10000"
+  hive-metastore:
+    image: bde2020/hive:2.1.0-postgresql-metastore
+    container_name: hive-metastore
+    env_file:
+      - ./hadoop-hive.env
+    command: /opt/hive/bin/hive --service metastore
+  hive-metastore-postgresql:
+    image: bde2020/hive-metastore-postgresql:2.1.0
+  spark-master:
+    image: bde2020/spark-master:2.1.0-hadoop2.8-hive-java8
+    container_name: spark-master
+    ports:
+      - 8080:8080
+      - 7077:7077
+    env_file:
+      - ./hadoop-hive.env
+  spark-worker:
+    image: bde2020/spark-worker:2.1.0-hadoop2.8-hive-java8
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./hadoop-hive.env
+  spark-notebook:
+    image: jupyter/all-spark-notebook
+    container_name: spark-notebook
+    env_file:
+      - ./hadoop-hive.env
+    ports:
+      - 8888:8888
+  hue:
+    image: bde2020/hdfs-filebrowser:3.11
+    ports:
+      - 8088:8088
+    environment:
+      - NAMENODE_HOST=namenode
