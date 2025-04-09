@@ -13,8 +13,7 @@
 1️⃣ Start the Workbench
 Run the following command to start the entire stack:
 """
-
-# docker-compose up -d
+###docker-compose up -d
 
 """
 ℹ️ `docker-compose` does not support scaling Spark workers. For a distributed setup, consider using Docker Swarm.
