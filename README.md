@@ -74,11 +74,14 @@ df.count()
 ```
 # Important Notes
 
-🛑 Fixing Namenode and Datanode Port Issues
-By default, the image you are using for Namenode and Datanodes is configured with old ports (50010 for Namenode and 50075 for Datanodes), which may not work when accessing them through the web UI. the ports are updated in the docker-compose.yml file but we also need to modify the HDFS configuration (hdfs-site.xml) inside the containers.
+🛑 Fixing `Namenode` and `Datanode` Port Issues:
 
-Step-by-Step Guide to Fix Ports
-1. Update Namenode Port
+By default, the image you are using for `Namenode` and `Datanodes` is configured with old ports (50010 for Namenode and 50075 for Datanodes), which may not work when accessing them through the web UI. the ports are updated in the `docker-compose.yml` file but we also need to modify the HDFS configuration (`hdfs-site.xml`) inside the containers.
+
+👉Step-by-Step Guide to Fix Ports
+
+1. Update Namenode Port 
+   
 To update the Namenode port (from the old default 50010), access the Namenode container by the following command:
 
 ```docker exec -it namenode bash```
@@ -87,11 +90,14 @@ Then, run this command to replace the default port in the hdfs-site.xml:
 ```sed -i '/<property><name>dfs.namenode.http-address<\/name><value><\/value><\/property>/d; /<\/configuration>/i <property>\n  <name>dfs.namenode.http-address<\/name>\n  <value>0.0.0.0:9870<\/value>\n<\/property>' /opt/hadoop-2.8.0/etc/hadoop/hdfs-site.xml```
 This will remove the old port definition and add the new port (9870).
 
-2. Update Datanode Port
+2. Update Datanode Port 
+   
 For Datanode1, follow the same steps:
 
 ```docker exec -it datanode1 bash```
+
 Then run the following command to update the ports in hdfs-site.xml:
+
 ```
 sed -i -e '/<property><name>dfs.namenode.http-address<\/name><value><\/value><\/property>/d' \
 -e '/<\/configuration>/i\    <property><name>dfs.namenode.http-address</name><value>0.0.0.0:9870</value></property>' \
@@ -107,12 +113,14 @@ sed -i -e '/<property><name>dfs.namenode.http-address<\/name><value><\/value><\/
 -e '/<\/configuration>/i\    <property><name>dfs.datanode.use.datanode.hostname</name><value>true</value></property>' \
 /opt/hadoop-2.8.0/etc/hadoop/hdfs-site.xml
 ```
+
 This command will remove the old port definitions and add the new ones for the Datanode and Namenode.
 
-👉Repeat the same steps for `datanote2` and 'datanote3'
+👉Repeat the same steps for `datanote2` and `datanote3`
 
 3. Restart the Hadoop containers
-After modifying the hdfs-site.xml file, it is necessary to restart the Hadoop services (NameNode and DataNode) to apply the new configurations.
+   
+After modifying the `hdfs-site.xml` file, it is necessary to restart the Hadoop services (NameNode and DataNode) to apply the new configurations.
 
 👉Restart the NameNode: ```docker restart namenode```
 👉Restart the DataNode: ```docker restart datanode```
