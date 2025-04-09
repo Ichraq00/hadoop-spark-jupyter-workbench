@@ -85,12 +85,14 @@ By default, the image you are using for `Namenode` and `Datanodes` is configured
 To update the Namenode port (from the old default 50010), access the Namenode container by the following command:
 
 ```bash
-docker exec -it namenode```
+docker exec -it namenode
+```
 
 Then, run this command to replace the default port in the hdfs-site.xml:
 
 ```bash
-sed -i '/<property><name>dfs.namenode.http-address<\/name><value><\/value><\/property>/d; /<\/configuration>/i <property>\n  <name>dfs.namenode.http-address<\/name>\n  <value>0.0.0.0:9870<\/value>\n<\/property>' /opt/hadoop-2.8.0/etc/hadoop/hdfs-site.xml```
+sed -i '/<property><name>dfs.namenode.http-address<\/name><value><\/value><\/property>/d; /<\/configuration>/i <property>\n  <name>dfs.namenode.http-address<\/name>\n  <value>0.0.0.0:9870<\/value>\n<\/property>' /opt/hadoop-2.8.0/etc/hadoop/hdfs-site.xml
+```
 
 This will remove the old port definition and add the new port (9870).
 
@@ -99,7 +101,8 @@ This will remove the old port definition and add the new port (9870).
 For Datanode1, follow the same steps:
 
 ```bash
-docker exec -it datanode1 bash```
+docker exec -it datanode1 bash
+```
 
 Then run the following command to update the ports in hdfs-site.xml:
 
@@ -128,9 +131,11 @@ This command will remove the old port definitions and add the new ones for the D
 After modifying the `hdfs-site.xml` file, it is necessary to restart the Hadoop services (NameNode and DataNode) to apply the new configurations.
 
 👉Restart the NameNode: ```bash
-docker restart namenode```
+docker restart namenode
+```
 👉Restart the DataNode: ```bash
-docker restart datanode```
+docker restart datanode
+```
 
 🛑 Fixing Hue Access Issues
 If you encounter this error in Hue:
