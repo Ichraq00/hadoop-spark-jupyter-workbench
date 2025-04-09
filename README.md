@@ -156,7 +156,7 @@ NoReverseMatch: u'about' is not a registered namespace
 
 # Maintainer
 
-* Forked & Customized by [Ichraq HAMMIOUI]
+* Forked & Customized by Ichraq HAMMIOUI
 * Originally maintained by Ivan Ermilov (@earthquakesan)
 
 ℹ️ This repository was originally part of the BDE H2020 EU project and is now customized for multi-datanode and Jupyter integration.
