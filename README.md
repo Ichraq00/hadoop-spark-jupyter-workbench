@@ -32,10 +32,18 @@ docker-compose -f docker-compose-hive.yml up -d spark-master spark-worker jupyte
 | Service         | URL                                  |
 |----------------|--------------------------------------|
 | Namenode       | http://localhost:9870 |
-| Datanodes      | http://localhost:9864 , 9865 , 9866 |
+| Datanode1      | http://localhost:9864 |
+| Datanode2      | http://localhost:9865 |
+| Datanode3      | http://localhost:9866 |
+| Ressource Manager | http://localhost:8089 |
+| History Server | http://localhost:8188 |
+| Node Manager   | http://localhost:8042 |
 | Spark Master   | http://localhost:8080 |
+| Spark Worker   | http://localhost:8081 |
 | Jupyter Notebook | http://localhost:8888 |
 | Hue (HDFS File Browser) | http://localhost:8088/home |
+
+⚠️ Note: The ResourceManager normally uses port 8088, but we've mapped it to 8089 because Hue also uses port 8088 by default. This prevents a port conflict when both services are running simultaneously.
 
 # Jupyter Notebook
 
@@ -66,6 +74,49 @@ df.count()
 ```
 # Important Notes
 
+🛑 Fixing Namenode and Datanode Port Issues
+By default, the image you are using for Namenode and Datanodes is configured with old ports (50010 for Namenode and 50075 for Datanodes), which may not work when accessing them through the web UI. the ports are updated in the docker-compose.yml file but we also need to modify the HDFS configuration (hdfs-site.xml) inside the containers.
+
+Step-by-Step Guide to Fix Ports
+1. Update Namenode Port
+To update the Namenode port (from the old default 50010), access the Namenode container by the following command:
+
+```docker exec -it namenode bash```
+Then, run this command to replace the default port in the hdfs-site.xml:
+
+```sed -i '/<property><name>dfs.namenode.http-address<\/name><value><\/value><\/property>/d; /<\/configuration>/i <property>\n  <name>dfs.namenode.http-address<\/name>\n  <value>0.0.0.0:9870<\/value>\n<\/property>' /opt/hadoop-2.8.0/etc/hadoop/hdfs-site.xml```
+This will remove the old port definition and add the new port (9870).
+
+2. Update Datanode Port
+For Datanode1, follow the same steps:
+
+```docker exec -it datanode1 bash```
+Then run the following command to update the ports in hdfs-site.xml:
+```
+sed -i -e '/<property><name>dfs.namenode.http-address<\/name><value><\/value><\/property>/d' \
+-e '/<\/configuration>/i\    <property><name>dfs.namenode.http-address</name><value>0.0.0.0:9870</value></property>' \
+-e '/<\/configuration>/i\    <property><name>dfs.datanode.http.address</name><value>0.0.0.0:9864</value></property>' \
+-e '/<\/configuration>/i\    <property><name>dfs.datanode.https.address</name><value>0.0.0.0:9865</value></property>' \
+-e '/<\/configuration>/i\    <property><name>dfs.datanode.address</name><value>0.0.0.0:9866</value></property>' \
+-e '/<\/configuration>/i\    <property><name>dfs.datanode.ipc.address</name><value>0.0.0.0:9867</value></property>' \
+-e '/<\/configuration>/i\    <property><name>dfs.namenode.rpc-bind-host</name><value>0.0.0.0</value></property>' \
+-e '/<\/configuration>/i\    <property><name>dfs.namenode.servicerpc-bind-host</name><value>0.0.0.0</value></property>' \
+-e '/<\/configuration>/i\    <property><name>dfs.namenode.http-bind-host</name><value>0.0.0.0</value></property>' \
+-e '/<\/configuration>/i\    <property><name>dfs.namenode.https-bind-host</name><value>0.0.0.0</value></property>' \
+-e '/<\/configuration>/i\    <property><name>dfs.client.use.datanode.hostname</name><value>true</value></property>' \
+-e '/<\/configuration>/i\    <property><name>dfs.datanode.use.datanode.hostname</name><value>true</value></property>' \
+/opt/hadoop-2.8.0/etc/hadoop/hdfs-site.xml
+```
+This command will remove the old port definitions and add the new ones for the Datanode and Namenode.
+
+👉Repeat the same steps for `datanote2` and 'datanote3'
+
+3. Restart the Hadoop containers
+After modifying the hdfs-site.xml file, it is necessary to restart the Hadoop services (NameNode and DataNode) to apply the new configurations.
+
+👉Restart the NameNode: ```docker restart namenode```
+👉Restart the DataNode: ```docker restart datanode```
+
 🛑 Fixing Hue Access Issues
 If you encounter this error in Hue:
 
@@ -76,15 +127,13 @@ NoReverseMatch: u'about' is not a registered namespace
 
 # Documentation & Resources
 
-"""
 - Original Repository (BDE2020): http://www.big-data-europe.eu/scalable-sparkhdfs-workbench-using-docker/
-"""
+
 
 # Maintainer
 
-"""
-* Forked & Customized by [Your Name]
+* Forked & Customized by [Ichraq HAMMIOUI]
 * Originally maintained by Ivan Ermilov (@earthquakesan)
 
 ℹ️ This repository was originally part of the BDE H2020 EU project and is now customized for multi-datanode and Jupyter integration.
-"""
+
