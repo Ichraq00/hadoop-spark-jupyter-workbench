@@ -40,12 +40,12 @@ docker-compose -f docker-compose-hive.yml up -d spark-master spark-worker jupyte
 # Jupyter Notebook
 
 💡 To access Jupyter Notebook, check the token with:
-bash```
+```bash
 docker logs <container_name>
 ```
 
 Or disable authentication with:
-bash```
+```bash
 command: start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
 ```
 
@@ -56,7 +56,7 @@ command: start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
 
 Example of running Spark in Jupyter Notebook:
 
-python```
+```python
 from pyspark.sql import SparkSession
  
 spark = SparkSession.builder.appName("Example").getOrCreate()
@@ -66,7 +66,6 @@ df.count()
 ```
 # Important Notes
 
-"""
 🛑 Fixing Hue Access Issues
 If you encounter this error in Hue:
 
@@ -74,7 +73,6 @@ NoReverseMatch: u'about' is not a registered namespace
 
 👉 Append `/home` to the URL:
 👉 http://localhost:8088/home
-"""
 
 # Documentation & Resources
 
