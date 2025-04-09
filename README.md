@@ -130,10 +130,14 @@ This command will remove the old port definitions and add the new ones for the D
    
 After modifying the `hdfs-site.xml` file, it is necessary to restart the Hadoop services (NameNode and DataNode) to apply the new configurations.
 
-👉Restart the NameNode: ```bash
+👉Restart the NameNode: 
+
+```bash
 docker restart namenode
 ```
-👉Restart the DataNode: ```bash
+👉Restart the DataNode: 
+
+```bash
 docker restart datanode
 ```
 
