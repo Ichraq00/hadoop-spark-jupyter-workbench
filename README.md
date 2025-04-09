@@ -23,49 +23,47 @@ To enable Hive Metastore & Hive Server, start services in this order:
 
 ```bash
 docker-compose -f docker-compose-hive.yml up -d namenode hive-metastore-postgresql
-# docker-compose -f docker-compose-hive.yml up -d datanode hive-metastore
-# docker-compose -f docker-compose-hive.yml up -d hive-server
-# docker-compose -f docker-compose-hive.yml up -d spark-master spark-worker jupyter hue
-
+docker-compose -f docker-compose-hive.yml up -d datanode hive-metastore
+docker-compose -f docker-compose-hive.yml up -d hive-server
+docker-compose -f docker-compose-hive.yml up -d spark-master spark-worker jupyter hue
+```
 # Web Interfaces
 
-"""
 | Service         | URL                                  |
 |----------------|--------------------------------------|
 | Namenode       | http://localhost:9870 |
-| Datanodes      | http://localhost:9864 |
+| Datanodes      | http://localhost:9864 , 9865 , 9866 |
 | Spark Master   | http://localhost:8080 |
 | Jupyter Notebook | http://localhost:8888 |
 | Hue (HDFS File Browser) | http://localhost:8088/home |
 
+# Jupyter Notebook
+
 💡 To access Jupyter Notebook, check the token with:
-"""
+bash```
+docker logs <container_name>
+```
 
-# docker logs <container_name>
-
-"""
 Or disable authentication with:
-"""
+bash```
+command: start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
+```
 
-# command: start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
-
-"""
 ⚠️ Security Warning: Do this only in a safe local environment.
-"""
+
 
 # Running Spark in Jupyter
 
-"""
 Example of running Spark in Jupyter Notebook:
-"""
 
-# from pyspark.sql import SparkSession
-# 
-# spark = SparkSession.builder.appName("Example").getOrCreate()
-# 
-# df = spark.read.text("/data.csv")
-# df.count()
-
+python```
+from pyspark.sql import SparkSession
+ 
+spark = SparkSession.builder.appName("Example").getOrCreate()
+ 
+df = spark.read.text("/data.csv")
+df.count()
+```
 # Important Notes
 
 """
