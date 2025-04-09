@@ -9,23 +9,19 @@
 
 # Getting Started
 
-"""
 1️⃣ Start the Workbench
 Run the following command to start the entire stack:
-"""
-###docker-compose up -d
+```bash
+docker-compose up -d
 
-"""
 ℹ️ `docker-compose` does not support scaling Spark workers. For a distributed setup, consider using Docker Swarm.
-"""
 
 # Running the Workbench with Hive Support
 
-"""
 To enable Hive Metastore & Hive Server, start services in this order:
-"""
 
-# docker-compose -f docker-compose-hive.yml up -d namenode hive-metastore-postgresql
+```bash
+docker-compose -f docker-compose-hive.yml up -d namenode hive-metastore-postgresql
 # docker-compose -f docker-compose-hive.yml up -d datanode hive-metastore
 # docker-compose -f docker-compose-hive.yml up -d hive-server
 # docker-compose -f docker-compose-hive.yml up -d spark-master spark-worker jupyter hue
