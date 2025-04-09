@@ -13,6 +13,7 @@
 Run the following command to start the entire stack:
 ```bash
 docker-compose up -d
+```
 
 ℹ️ `docker-compose` does not support scaling Spark workers. For a distributed setup, consider using Docker Swarm.
 
