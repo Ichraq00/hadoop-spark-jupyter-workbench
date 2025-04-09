@@ -85,7 +85,7 @@ By default, the image you are using for `Namenode` and `Datanodes` is configured
 To update the Namenode port (from the old default 50010), access the Namenode container by the following command:
 
 ```bash
-docker exec -it namenode bash```
+docker exec -it namenode```
 
 Then, run this command to replace the default port in the hdfs-site.xml:
 
